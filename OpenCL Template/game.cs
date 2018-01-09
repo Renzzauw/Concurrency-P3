@@ -11,8 +11,8 @@ using OpenTK.Graphics.OpenGL;
 namespace Template
 {
     class Game
-    {
-	    // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
+    {        
+        // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
 	    bool GLInterop = false;
 	    // load the OpenCL program; this creates the OpenCL context
 	    static OpenCLProgram ocl = new OpenCLProgram( "../../program.cl" );
@@ -30,8 +30,16 @@ namespace Template
         // two buffers for the pattern: simulate reads 'second', writes to 'pattern'
         uint[] pattern;
         uint[] second;
+
+        OpenCLBuffer<uint> patternBuffer, secondBuffer;
+        void CreatePatternBuffers()
+        {
+            patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
+            secondBuffer = new OpenCLBuffer<uint>(ocl, second);
+        }
+
         uint pw, ph; // note: pw is in uints; width in bits is 32 this value.
-                     // helper function for setting one bit in the pattern buffer
+        // helper function for setting one bit in the pattern buffer
         void BitSet(uint x, uint y) { pattern[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
         // helper function for getting one bit from the secondary pattern buffer
         uint GetBit(uint x, uint y) { return (second[y * pw + (x >> 5)] >> (int)(x & 31)) & 1U; }
@@ -81,6 +89,8 @@ namespace Template
                     ph = UInt32.Parse(sub[3]);
                     pattern = new uint[pw * ph];
                     second = new uint[pw * ph];
+                    //Console.WriteLine(pw);
+                    //Console.WriteLine(ph);
                 }
                 else while (pos < line.Length)
                 {
@@ -94,8 +104,12 @@ namespace Template
                     }
                 }
             }
+            CreatePatternBuffers();
             // swap buffers
-            for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
+            for (int i = 0; i < pw * ph; i++)
+            {
+                second[i] = pattern[i];
+            }
         }
 
 
@@ -109,14 +123,27 @@ namespace Template
             GL.Finish();
 		    // clear the screen
 		    screen.Clear( 0 );
-		    // do opencl stuff
-		    if (GLInterop) kernel.SetArgument( 0, image );
-			else kernel.SetArgument( 0, buffer );
-		    kernel.SetArgument( 1, t );
+            // do opencl stuff
+            if (GLInterop)
+            {
+                kernel.SetArgument(0, image);
+            }
+            else
+            {
+                kernel.SetArgument(0, buffer);
+            }
+            CreatePatternBuffers();
+            
+            kernel.SetArgument(1, t);
+            //kernel.SetArgument(2, pw);
+            //kernel.SetArgument(3, ph);
+            //kernel.SetArgument(2, patternBuffer);
+            //kernel.SetArgument(3, secondBuffer);
+            
 		    t += 0.1f;
  		    // execute kernel
-		    long [] workSize = { 512, 512 };
-		    long [] localSize = { 32, 4 };
+            long[] workSize = { 512, 512 };
+            long [] localSize = { 32, 4 };
 		    if (GLInterop)
 		    {
 			    // INTEROP PATH:
@@ -143,9 +170,10 @@ namespace Template
 			    buffer.CopyFromDevice();
 			    // plot pixels using the data on the host
 			    for( int y = 0; y < 512; y++ ) for( int x = 0; x < 512; x++ )
-			    {
-				    screen.pixels[x + y * screen.width] = buffer[x + y * 512];
-			    }
+			    {                        
+                    screen.pixels[x + y * screen.width] = buffer[x + y * 512];
+                    //Console.WriteLine(screen.pixels[x + y * screen.width] = buffer[x + y * 512]);
+                }
 		    }
             // report performance
             Console.WriteLine("generation " + generation++ + ": " + timer.ElapsedMilliseconds + "ms");
