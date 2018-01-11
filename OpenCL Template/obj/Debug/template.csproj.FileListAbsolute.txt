@@ -1,13 +1,13 @@
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\template.exe.config
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\template.exe
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\template.pdb
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\Cloo.dll
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\OpenTK.dll
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\System.Numerics.Vectors.dll
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\Cloo.xml
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\Cloo.dll.config
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\bin\Debug\OpenTK.dll.config
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\obj\Debug\template.csprojResolveAssemblyReference.cache
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\obj\Debug\template.csproj.CoreCompileInputs.cache
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\obj\Debug\template.exe
-D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\OpenCL Template\obj\Debug\template.pdb
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\template.exe.config
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\template.exe
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\template.pdb
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\Cloo.dll
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\OpenTK.dll
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\System.Numerics.Vectors.dll
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\Cloo.xml
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\Cloo.dll.config
+d:\Users\Renzo\Desktop\OpenCL\bin\Debug\OpenTK.dll.config
+d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.csproj.CoreCompileInputs.cache
+d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.exe
+d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.pdb
+d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.csprojResolveAssemblyReference.cache
