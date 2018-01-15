@@ -8,15 +8,33 @@ using OpenTK.Input;
  
 namespace Template
 {
-	// OpenTKApp
-	// Overloads the OpenTK GameWindow class. The template creates a single OpenGL texture,
-	// identified by screenID. The pixels of this texture come from Surface game.screen and
-	// are uploaded to the GPU after every game.Tick(), providing a linear pixel buffer to
-	// the game class.
-	// After rendering a full-screen quad using this texture, the template executes
-	// game.Render(), which may perform additional OpenGL rendering on top of the initial
-	// output.
-	public class OpenTKApp : GameWindow
+    internal static class CursorPosition
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+            public static implicit operator Point(POINT point) { return new Point(point.X, point.Y); }
+        }
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+        public static Point GetCursorPosition()
+        {
+            POINT lpPoint;
+            GetCursorPos(out lpPoint);
+            return lpPoint;
+        }
+    }
+    // OpenTKApp
+    // Overloads the OpenTK GameWindow class. The template creates a single OpenGL texture,
+    // identified by screenID. The pixels of this texture come from Surface game.screen and
+    // are uploaded to the GPU after every game.Tick(), providing a linear pixel buffer to
+    // the game class.
+    // After rendering a full-screen quad using this texture, the template executes
+    // game.Render(), which may perform additional OpenGL rendering on top of the initial
+    // output.
+    public class OpenTKApp : GameWindow
 	{
 		static int screenID;
 		static Game game;
@@ -53,8 +71,11 @@ namespace Template
 			// called once per frame; app logic
 			var keyboard = OpenTK.Input.Keyboard.GetState();
 			if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
-		}
-		protected override void OnRenderFrame( FrameEventArgs e )
+            var mouse = OpenTK.Input.Mouse.GetState();
+            Point p = CursorPosition.GetCursorPosition();
+            game.SetMouseState(p.X, p.Y, mouse.LeftButton == ButtonState.Pressed);
+        }
+        protected override void OnRenderFrame( FrameEventArgs e )
 		{
 			// called once per frame; render
 			game.Tick();

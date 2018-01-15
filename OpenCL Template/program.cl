@@ -1,4 +1,4 @@
-// #define GLINTEROP
+#define GLINTEROP
 
 uint GetBit ( __global uint* buffer, uint x, uint y)
 {
@@ -6,43 +6,50 @@ uint GetBit ( __global uint* buffer, uint x, uint y)
 }
 
 #ifdef GLINTEROP
-__kernel void device_function( write_only image2d_t a, float t )
+__kernel void device_function( write_only image2d_t a, float time, uint pw, uint ph, uint pwph, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
 #else
-__kernel void device_function( __global uint* buffer, float time, uint pw, uint ph, uint pwph, __global uint* pattern, __global uint* second )
+__kernel void device_function( __global uint* buffer, float time, uint pw, uint ph, uint pwph, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
 #endif
 {
-	for (int i = 0; i < pwph; i++)
+	int id = get_global_id(0);
+
+    if (id >= pwph)
 	{
-		pattern[i] = 0;
-	}
-	
-	// process all pixels, skipping one pixel boundary
-    uint w = pw * 32, h = ph;
-    for (uint y = 1; y < h - 1; y++) for (uint x = 1; x < w - 1; x++)
-    {
-        // count active neighbors
-        uint n = GetBit(second, x - 1, y - 1) + GetBit(second, x, y - 1) + GetBit(second, x + 1, y - 1) + GetBit(second, x - 1, y) + GetBit(second, x + 1, y) + GetBit(second, x - 1, y + 1) + GetBit(second, x, y + 1) + GetBit(second, x + 1, y + 1);
-        if ((GetBit(second, x, y) == 1 && n == 2) || n == 3) 
-		{
-			//BitSet(x, y);			
-			pattern[y * 512 + (x >> 5)] |= 1U << (int)(x & 31);
-		}
-	}
-	for (int i = 0; i < pwph; i++)
-	{
-		second[i] = pattern[i];
+		return;
 	}
 
-/*
+	uint x = id % pw % 32;
+	uint y = id / pw;
+	pattern[id / 32] |= 1U << (int)(x & 31);
+
+	second[id / 32] = pattern[id / 32];
+
 #ifdef GLINTEROP
+/*
+	int idx = id % pw + id / 32;
+	int idy = id / pw;
+	if (idx < xoffset || idx > (xoffset + 512) || idy < yoffset || idy > (yoffset + 512))
+	{
+		return;
+	}
+
+	printf("idx: %i, idy: %i\n", idx, idy);
+
+	int2 pos = (int2)(idx, idy);
+	float4 col = (float4)(1.0f, 1.0f, 1.0f, 1.0f);
+	write_imagef(a, pos, col);
+*/
+/*
+	int idx = id % 32;
+	int idy = id / 32;
 	int2 pos = (int2)(idx,idy);
-	write_imagef( a, pos, (float4)(col * (1.0f / 16.0f), 1.0f ) );
-	
+	float4 col = (float4)(1.0f, 1.0f, 1.0f, 1.0f);
+	write_imagef( a, pos, col );
+*/
 #else
 	int r = (int)clamp( 16.0f * col.x, 0.f, 255.f );
 	int g = (int)clamp( 16.0f * col.y, 0.f, 255.f );
 	int b = (int)clamp( 16.0f * col.z, 0.f, 255.f );
-	a[id] = (r << 16) + (g << 8) + b;
+	buffer[id] = (r << 16) + (g << 8) + b;
 #endif
-*/
 }

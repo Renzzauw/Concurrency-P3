@@ -14,7 +14,7 @@ namespace Template
     class Game
     {
         // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
-        bool GLInterop = false;
+        bool GLInterop = true;
         // load the OpenCL program; this creates the OpenCL context
         static OpenCLProgram ocl = new OpenCLProgram( "../../program.cl" );
         // find the kernel named 'device_function' in the program
@@ -102,10 +102,6 @@ namespace Template
             for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
-
-            kernel.SetArgument(2, pw);
-            kernel.SetArgument(3, ph);
-            kernel.SetArgument(4, pwph);
         }
         // SIMULATE
         // Takes the pattern in array 'second', and applies the rules of Game of Life to produce the next state
@@ -139,13 +135,18 @@ namespace Template
                 kernel.SetArgument(0, buffer);
             }
 	        kernel.SetArgument( 1, t );
+            kernel.SetArgument(2, pw);
+            kernel.SetArgument(3, ph);
+            kernel.SetArgument(4, pwph);
             kernel.SetArgument(5, patternBuffer);
             kernel.SetArgument(6, secondBuffer);
+            kernel.SetArgument(7, xoffset);
+            kernel.SetArgument(8, yoffset);
 
             t += 0.1f;
  	        // execute kernel
-	        long [] workSize = { 512, 512 };
-	        long [] localSize = { 32, 4 };
+	        long [] workSize = { pwph };
+            long[] localSize = null;
 	        if (GLInterop)
 	        {
 		        // INTEROP PATH:
@@ -155,7 +156,7 @@ namespace Template
 		        // lock the OpenGL texture for use by OpenCL
 		        kernel.LockOpenGLObject( image.texBuffer );
 		        // execute the kernel
-		        kernel.Execute( workSize, localSize );
+		        kernel.Execute( workSize, null );
 		        // unlock the OpenGL texture so it can be used for drawing a quad
 		        kernel.UnlockOpenGLObject( image.texBuffer );
 	        }

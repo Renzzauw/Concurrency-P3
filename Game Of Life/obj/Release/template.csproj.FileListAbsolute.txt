@@ -6,3 +6,12 @@ D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3
 D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\Game Of Life\obj\Release\template.csproj.CoreCompileInputs.cache
 D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\Game Of Life\obj\Release\template.exe
 D:\Users\Renzo\Google Drive\_Tweede Jaar\Blok 2\Concurrency\Practica\Practicum 3\Game Of Life\obj\Release\template.pdb
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\bin\Release\template.exe.config
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\bin\Release\template.exe
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\bin\Release\template.pdb
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\bin\Release\OpenTK.dll
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\bin\Release\OpenTK.dll.config
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\obj\Release\template.csprojResolveAssemblyReference.cache
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\obj\Release\template.csproj.CoreCompileInputs.cache
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\obj\Release\template.exe
+D:\Documents\GitHub\Concurrency-P3\Game Of Life\obj\Release\template.pdb

@@ -11,3 +11,16 @@ d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.csproj.CoreCompileInputs.cache
 d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.exe
 d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.pdb
 d:\Users\Renzo\Desktop\OpenCL\obj\Debug\template.csprojResolveAssemblyReference.cache
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\template.exe.config
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\template.exe
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\template.pdb
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\Cloo.dll
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\OpenTK.dll
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\System.Numerics.Vectors.dll
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\Cloo.xml
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\Cloo.dll.config
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\OpenTK.dll.config
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.csprojResolveAssemblyReference.cache
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.csproj.CoreCompileInputs.cache
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.exe
+D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.pdb
