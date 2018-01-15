@@ -102,6 +102,8 @@ namespace Template
             for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
+
+            Console.WriteLine("PW = " + pw + ", PH = " + ph + ", dus aantal cellen in x richting is " + (pw * 32));
         }
         // SIMULATE
         // Takes the pattern in array 'second', and applies the rules of Game of Life to produce the next state

@@ -12,33 +12,34 @@ __kernel void device_function( __global uint* buffer, float time, uint pw, uint 
 #endif
 {
 	int id = get_global_id(0);
+	int id2 = get_global_id(1);
 
     if (id >= pwph)
 	{
 		return;
 	}
 
-	uint x = id % pw % 32;
+	// pw is het aantal uints dat het level breed is.
+
+	uint x = id % (pw * 32);
 	uint y = id / pw;
+
+	//printf("pw = %i   id = %i   idx = %i   idy = %i\n", pw, id, x, y);
+
 	pattern[id / 32] |= 1U << (int)(x & 31);
 
 	second[id / 32] = pattern[id / 32];
 
 #ifdef GLINTEROP
-/*
-	int idx = id % pw + id / 32;
-	int idy = id / pw;
-	if (idx < xoffset || idx > (xoffset + 512) || idy < yoffset || idy > (yoffset + 512))
+	if (x < xoffset || x > (xoffset + 511) || y < yoffset || y > (yoffset + 511))
 	{
 		return;
 	}
 
-	printf("idx: %i, idy: %i\n", idx, idy);
-
-	int2 pos = (int2)(idx, idy);
+	int2 pos = (int2)((int)x - xoffset, (int)y - yoffset);
 	float4 col = (float4)(1.0f, 1.0f, 1.0f, 1.0f);
 	write_imagef(a, pos, col);
-*/
+
 /*
 	int idx = id % 32;
 	int idy = id / 32;
