@@ -6,15 +6,14 @@ uint GetBit ( __global uint* buffer, uint x, uint y)
 }
 
 #ifdef GLINTEROP
-__kernel void device_function( write_only image2d_t a, float time, uint pw, uint ph, uint pwph, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
+__kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
 #else
-__kernel void device_function( __global uint* buffer, float time, uint pw, uint ph, uint pwph, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
+__kernel void device_function( __global uint* buffer, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
 #endif
 {
 	int id = get_global_id(0);
-	int id2 = get_global_id(1);
 
-    if (id >= pwph)
+    if (id >= amountOfCells)
 	{
 		return;
 	}

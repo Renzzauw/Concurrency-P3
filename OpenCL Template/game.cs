@@ -27,13 +27,12 @@ namespace Template
         OpenCLImage<int> image = new OpenCLImage<int>( ocl, 512, 512 );
         public Surface screen;
         Stopwatch timer = new Stopwatch();
-        float t = 21.5f;
         int generation = 0;
         // two buffers for the pattern: simulate reads 'second', writes to 'pattern'
         uint[] pattern;
         uint[] second;
         uint pw, ph; // note: pw is in uints; width in bits is 32 this value.
-                        // helper function for setting one bit in the pattern buffer
+        // helper function for setting one bit in the pattern buffer
         void BitSet(uint x, uint y) { pattern[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
         // helper function for getting one bit from the secondary pattern buffer
         uint GetBit(uint x, uint y) { return (second[y * pw + (x >> 5)] >> (int)(x & 31)) & 1U; }
@@ -43,7 +42,8 @@ namespace Template
         int dragXStart, dragYStart, offsetXStart, offsetYStart;
 
         // Variables we will pass to OpenCL
-        uint pwph = 0;
+        uint pwph;
+        uint amountOfCells;
 
         public void SetMouseState(int x, int y, bool pressed)
         {
@@ -98,12 +98,16 @@ namespace Template
                     }
             }
             pwph = pw * ph;
+            amountOfCells = pwph * 32;
             // swap buffers
             for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
 
-            Console.WriteLine("PW = " + pw + ", PH = " + ph + ", dus aantal cellen in x richting is " + (pw * 32));
+            // pass some constant values to the kernel.
+            kernel.SetArgument(1, pw);
+            kernel.SetArgument(2, ph);
+            kernel.SetArgument(3, amountOfCells);
         }
         // SIMULATE
         // Takes the pattern in array 'second', and applies the rules of Game of Life to produce the next state
@@ -136,19 +140,13 @@ namespace Template
             {
                 kernel.SetArgument(0, buffer);
             }
-	        kernel.SetArgument( 1, t );
-            kernel.SetArgument(2, pw);
-            kernel.SetArgument(3, ph);
-            kernel.SetArgument(4, pwph);
-            kernel.SetArgument(5, patternBuffer);
-            kernel.SetArgument(6, secondBuffer);
-            kernel.SetArgument(7, xoffset);
-            kernel.SetArgument(8, yoffset);
+            kernel.SetArgument(4, patternBuffer);
+            kernel.SetArgument(5, secondBuffer);
+            kernel.SetArgument(6, xoffset);
+            kernel.SetArgument(7, yoffset);
 
-            t += 0.1f;
  	        // execute kernel
-	        long [] workSize = { pwph };
-            long[] localSize = null;
+	        long[] workSize = { pwph };
 	        if (GLInterop)
 	        {
 		        // INTEROP PATH:
@@ -170,7 +168,7 @@ namespace Template
 		        // is copied to the screen surface, so the template code can show
 		        // it in the window.
 		        // execute the kernel
-		        kernel.Execute( workSize, localSize );
+		        kernel.Execute( workSize, null );
 		        // get the data from the device to the host
 		        buffer.CopyFromDevice();
                 patternBuffer.CopyFromDevice();
