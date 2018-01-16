@@ -154,6 +154,8 @@ namespace Template
                 kernel.Finish();
                 // execute the copy kernel
                 copyKernel.Execute(workSize, null);
+                // wait for the copykernel to finish
+                copyKernel.Finish();
 		        // unlock the OpenGL texture so it can be used for drawing a quad
 		        kernel.UnlockOpenGLObject( image.texBuffer );
 	        }
