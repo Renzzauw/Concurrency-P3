@@ -1,9 +1,9 @@
 #define GLINTEROP
 
-uint GetBit ( __global uint* second, uint x, uint y, uint pw)
+int GetBit ( __global uint* second, uint x, uint y, uint pw)
 {
 	uint id = y * (pw * 32) + x;
-	uint x2 = id / 32;
+	uint x2 = x / 32 + y * pw;
 
 	int i = second[x2] >> (int)(x & 31) & 1U;
 	return i;
@@ -25,7 +25,7 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 	uint y = id / (pw * 32);
 
 	// x2 is juiste uint	
-	uint x2 = x + y * 32;
+	uint x2 = x / 32 + y * pw;
 
 	pattern[x2] &= ~(1U << (x & 31));
 
@@ -61,9 +61,9 @@ __kernel void copy_data(int pw, int amountOfCells, __global uint* pattern, __glo
 
 	uint x = id % (pw * 32);
 	uint y = id / (pw * 32);
-	uint x2 = x / 32;
+	uint x2 = x / 32 + y * pw;
 
 	int bitWaarde = GetBit(pattern, x, y, pw);
-	pattern[x2] |= 1U << (int)(x & 31);
+	second[x2] |= bitWaarde << (int)(x & 31);
 	//second[x2] = pattern[x2];
 }
