@@ -19,6 +19,8 @@ namespace Template
         static OpenCLProgram ocl = new OpenCLProgram( "../../program.cl" );
         // find the kernel named 'device_function' in the program
         OpenCLKernel kernel = new OpenCLKernel( ocl, "device_function" );
+        // find the kernel named 'copy_data' in the program
+        OpenCLKernel copyKernel = new OpenCLKernel(ocl, "copy_data");
         // create a regular buffer; by default this resides on both the host and the device
         OpenCLBuffer<int> buffer = new OpenCLBuffer<int>( ocl, 512 * 512 );
         OpenCLBuffer<uint> secondBuffer;
@@ -104,21 +106,19 @@ namespace Template
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
 
-            // pass some constant values to the kernel.
+            // pass values to the kernel.
+            kernel.SetArgument(0, image);
             kernel.SetArgument(1, pw);
             kernel.SetArgument(2, ph);
             kernel.SetArgument(3, amountOfCells);
-        }
-        // SIMULATE
-        // Takes the pattern in array 'second', and applies the rules of Game of Life to produce the next state
-        // in array 'pattern'. At the end, the result is copied back to 'second' for the next generation.
-        void Simulate()
-        {
-            // clear destination pattern
-            for (int i = 0; i < pw * ph; i++) pattern[i] = 0;
-            
-            // swap buffers
-            for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
+            kernel.SetArgument(4, patternBuffer);
+            kernel.SetArgument(5, secondBuffer);
+
+            // pass values to the copy kernel
+            copyKernel.SetArgument(0, pw);
+            copyKernel.SetArgument(1, amountOfCells);
+            copyKernel.SetArgument(2, patternBuffer);
+            copyKernel.SetArgument(3, secondBuffer);
         }
         // TICK
         // Main application entry point: the template calls this function once per frame.
@@ -127,26 +127,19 @@ namespace Template
             // start timer
             timer.Restart();
             // run the simulation, 1 step
-            //Simulate();
             GL.Finish();
 	        // clear the screen
 	        screen.Clear( 0 );
             // do opencl stuff
-            if (GLInterop)
-            {
-                kernel.SetArgument(0, image);
-            }
-            else
-            {
+            if (!GLInterop)
+            { 
                 kernel.SetArgument(0, buffer);
             }
-            kernel.SetArgument(4, patternBuffer);
-            kernel.SetArgument(5, secondBuffer);
             kernel.SetArgument(6, xoffset);
             kernel.SetArgument(7, yoffset);
 
  	        // execute kernel
-	        long[] workSize = { pwph };
+	        long[] workSize = { amountOfCells };
 	        if (GLInterop)
 	        {
 		        // INTEROP PATH:
@@ -157,6 +150,10 @@ namespace Template
 		        kernel.LockOpenGLObject( image.texBuffer );
 		        // execute the kernel
 		        kernel.Execute( workSize, null );
+                // Wait for the kernel to finish
+                kernel.Finish();
+                // execute the copy kernel
+                copyKernel.Execute(workSize, null);
 		        // unlock the OpenGL texture so it can be used for drawing a quad
 		        kernel.UnlockOpenGLObject( image.texBuffer );
 	        }

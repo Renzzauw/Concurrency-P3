@@ -267,5 +267,10 @@ namespace Template
 		{
 			queue.Execute( kernel, null, workSize, localSize, null );
 		}
+        // Wait for the queue to finish
+        public void Finish()
+        {
+            queue.Finish();
+        }
 	}
 }
