@@ -1,11 +1,11 @@
 #define GLINTEROP
 
-int GetBit ( __global uint* second, uint x, uint y, uint pw)
+uint GetBit ( __global uint* second, uint x, uint y, uint pw)
 {
 	uint id = y * (pw * 32) + x;
-	uint x2 = x / 32 + y * pw;
+	uint x2 = id >> 5;
 
-	int i = second[x2] >> (int)(x & 31) & 1U;
+	uint i = second[x2] >> (int)(x & 31) & 1U;
 	return i;
 
 	//return (second[y * 512 + (x >> 5)] >> (int)(x & 31)) & 1U;
@@ -25,9 +25,10 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 	uint y = id / (pw * 32);
 
 	// x2 is juiste uint	
-	uint x2 = x / 32 + y * pw;
+	uint x2 = id >> 5;
 
-	pattern[x2] &= ~(1U << (x & 31));
+	atomic_and(&pattern[x2], ~(1U << (x & 31)));
+	//pattern[x2] &= ~(1U << (x & 31));
 
 	if (x > 1 && x < pw * 32 - 1 && y > 1 && y < ph - 1)
 	{
@@ -35,7 +36,8 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 
 		if ((GetBit(second, x, y, pw) == 1 && n == 2) || n == 3)
 		{
-			pattern[x2] |= 1U << (int)(x & 31);
+			atomic_or(&pattern[x2], 1U << (int)(x & 31));
+			//pattern[x2] |= 1U << (int)(x & 31);
 		}
 	}
 	
@@ -61,9 +63,10 @@ __kernel void copy_data(int pw, int amountOfCells, __global uint* pattern, __glo
 
 	uint x = id % (pw * 32);
 	uint y = id / (pw * 32);
-	uint x2 = x / 32 + y * pw;
+	uint x2 = id >> 5;
 
 	int bitWaarde = GetBit(pattern, x, y, pw);
-	second[x2] |= bitWaarde << (int)(x & 31);
+	atomic_or(&second[x2], bitWaarde << (int)(x & 31));
+	//second[x2] |= bitWaarde << (int)(x & 31);
 	//second[x2] = pattern[x2];
 }
