@@ -5,7 +5,9 @@ uint GetBit ( __global uint* second, uint x, uint y, uint pw)
 	uint id = y * (pw * 32) + x;
 	uint x2 = id >> 5;
 
-	uint i = second[x2] >> (int)(x & 31) & 1U;
+	//printf("Getting bit %i from uint %i\n", x, x2);
+
+	uint i = (second[x2] >> (int)(x & 31)) & 1U;
 	return i;
 
 	//return (second[y * 512 + (x >> 5)] >> (int)(x & 31)) & 1U;
@@ -30,6 +32,8 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 	atomic_and(&pattern[x2], ~(1U << (x & 31)));
 	//pattern[x2] &= ~(1U << (x & 31));
 
+	//printf("Normal function: bit %i from uint %i\n", x, x2);
+
 	if (x > 1 && x < pw * 32 - 1 && y > 1 && y < ph - 1)
 	{
 		int n = GetBit(second, x - 1, y - 1, pw) + GetBit(second, x - 1, y, pw) + GetBit(second, x - 1, y + 1, pw) + GetBit(second, x, y - 1, pw) + GetBit(second, x, y + 1, pw) + GetBit(second, x + 1, y - 1, pw) + GetBit(second, x + 1, y, pw) + GetBit(second, x + 1, y + 1, pw);
@@ -47,7 +51,7 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 	}
 
 	int2 pos = (int2)((int)x - xoffset, (int)y - yoffset);
-	int colour = GetBit(pattern, x, y, pw);
+	float colour = (float)GetBit(pattern, x, y, pw);
 	float4 col = (float4)(colour, colour, colour, 1.0f);
 	write_imagef(a, pos, col);
 }
@@ -68,5 +72,4 @@ __kernel void copy_data(int pw, int amountOfCells, __global uint* pattern, __glo
 	int bitWaarde = GetBit(pattern, x, y, pw);
 	atomic_or(&second[x2], bitWaarde << (int)(x & 31));
 	//second[x2] |= bitWaarde << (int)(x & 31);
-	//second[x2] = pattern[x2];
 }
