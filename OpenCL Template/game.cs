@@ -13,6 +13,9 @@ namespace Template
 
     class Game
     {
+        // parameters for the screenwidth and -height
+        public static int screenWidth;
+        public static int screenHeight;
         // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
         bool GLInterop = true;
         // load the OpenCL program; this creates the OpenCL context
@@ -22,11 +25,11 @@ namespace Template
         // find the kernel named 'copy_data' in the program
         OpenCLKernel copyKernel = new OpenCLKernel(ocl, "copy_data");
         // create a regular buffer; by default this resides on both the host and the device
-        OpenCLBuffer<int> buffer = new OpenCLBuffer<int>( ocl, 512 * 512 );
+        OpenCLBuffer<int> buffer = new OpenCLBuffer<int>( ocl, screenWidth * screenHeight );
         OpenCLBuffer<uint> secondBuffer;
         OpenCLBuffer<uint> patternBuffer;
         // create an OpenGL texture to which OpenCL can send data
-        OpenCLImage<int> image = new OpenCLImage<int>( ocl, 512, 512 );
+        OpenCLImage<int> image = new OpenCLImage<int>( ocl, screenWidth, screenHeight );
         public Surface screen;
         Stopwatch timer = new Stopwatch();
         int generation = 0;
@@ -54,8 +57,8 @@ namespace Template
                 if (lastLButtonState)
                 {
                     int deltax = x - dragXStart, deltay = y - dragYStart;
-                    xoffset = (uint)Math.Min(pw * 32 - screen.width, Math.Max(0, offsetXStart - deltax));
-                    yoffset = (uint)Math.Min(ph - screen.height, Math.Max(0, offsetYStart - deltay));
+                    xoffset = (uint)Math.Min(pw * 32 - screenWidth, Math.Max(0, offsetXStart - deltax));
+                    yoffset = (uint)Math.Min(ph - screenHeight, Math.Max(0, offsetYStart - deltay));
                 }
                 else
                 {
@@ -113,6 +116,8 @@ namespace Template
             kernel.SetArgument(3, amountOfCells);
             kernel.SetArgument(4, patternBuffer);
             kernel.SetArgument(5, secondBuffer);
+            kernel.SetArgument(8, screenWidth);
+            kernel.SetArgument(9, screenHeight);
 
             // pass values to the copy kernel
             copyKernel.SetArgument(0, pw);

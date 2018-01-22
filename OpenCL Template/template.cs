@@ -44,9 +44,11 @@ namespace Template
 			GL.ClearColor( Color.Black );
 			GL.Enable( EnableCap.Texture2D );
 			GL.Hint( HintTarget.PerspectiveCorrectionHint, HintMode.Nicest );
-			Width = 600;
-			Height = 600;
-			game = new Game();
+			Width = 512;
+			Height = 512;
+            Game.screenWidth = Width;
+            Game.screenHeight = Height;
+            game = new Game();
 			game.screen = new Surface( Width, Height );
 			Sprite.target = game.screen;
 			screenID = game.screen.GenTexture();

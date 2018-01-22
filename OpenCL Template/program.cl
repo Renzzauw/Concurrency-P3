@@ -13,7 +13,7 @@ uint GetBit ( __global uint* second, uint x, uint y, uint pw)
 }
 
 // main kernel
-__kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset )
+__kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight )
 {
 	// get the id of the current cell
 	int id = get_global_id(0);
@@ -53,7 +53,7 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 	}
 	
 	// if we don't want to draw the pixel because it is outside our bounds, return
-	if (x < xoffset || x > (xoffset + 511) || y < yoffset || y > (yoffset + 511))
+	if (x < xoffset || x > (xoffset + screenWidth - 1) || y < yoffset || y > (yoffset + screenHeight - 1))
 	{
 		return;
 	}
