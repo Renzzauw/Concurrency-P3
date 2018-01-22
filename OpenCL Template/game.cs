@@ -36,16 +36,15 @@ namespace Template
         uint[] pattern;
         uint[] second;
         uint pw, ph; // note: pw is in uints; width in bits is 32 this value.
+        uint pwph;
+        uint amountOfCells;
+        uint levelWidth; // in cells
         // helper function for setting one bit in the pattern buffer
         void BitSet(uint x, uint y, uint[] array) { array[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
         // mouse handling: dragging functionality
         uint xoffset = 0, yoffset = 0;
         bool lastLButtonState = false;
         int dragXStart, dragYStart, offsetXStart, offsetYStart;
-
-        // Variables we will pass to OpenCL
-        uint pwph;
-        uint amountOfCells;
 
         public void SetMouseState(int x, int y, bool pressed)
         {
@@ -54,7 +53,7 @@ namespace Template
                 if (lastLButtonState)
                 {
                     int deltax = x - dragXStart, deltay = y - dragYStart;
-                    xoffset = (uint)Math.Min(pw * 32 - screenWidth, Math.Max(0, offsetXStart - deltax));
+                    xoffset = (uint)Math.Min(levelWidth - screenWidth, Math.Max(0, offsetXStart - deltax));
                     yoffset = (uint)Math.Min(ph - screenHeight, Math.Max(0, offsetYStart - deltay));
                 }
                 else
@@ -82,10 +81,11 @@ namespace Template
                 else if (line[pos] == 'x') // header
                 {
                     String[] sub = line.Split(new char[] { '=', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    pw = (UInt32.Parse(sub[1]) + 31) / 32;
+                    pw = (UInt32.Parse(sub[1]) + 31) >> 5;
                     ph = UInt32.Parse(sub[3]);
-                    pattern = new uint[pw * ph];
-                    second = new uint[pw * ph];
+                    pwph = pw * ph;
+                    pattern = new uint[pwph];
+                    second = new uint[pwph];
                 }
                 else while (pos < line.Length)
                     {
@@ -99,8 +99,9 @@ namespace Template
                         }
                     }
             }
-            pwph = pw * ph;
-            amountOfCells = pwph * 32;
+            //pwph = pw * ph;
+            amountOfCells = pwph << 5;
+            levelWidth = pw << 5;
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
 
@@ -108,21 +109,21 @@ namespace Template
             if (GLInterop)
             {
                 kernel.SetArgument(0, image);
+                kernel.SetArgument(4, patternBuffer);
+                kernel.SetArgument(5, secondBuffer);
             }
             else
             {
                 kernel.SetArgument(0, buffer);
             }
-            kernel.SetArgument(1, pw);
+            kernel.SetArgument(1, levelWidth);
             kernel.SetArgument(2, ph);
             kernel.SetArgument(3, amountOfCells);
-            kernel.SetArgument(4, patternBuffer);
-            kernel.SetArgument(5, secondBuffer);
             kernel.SetArgument(8, screenWidth);
             kernel.SetArgument(9, screenHeight);
 
             // pass values to the copy kernel
-            copyKernel.SetArgument(0, pw);
+            copyKernel.SetArgument(0, levelWidth);
             copyKernel.SetArgument(1, amountOfCells);
             copyKernel.SetArgument(2, patternBuffer);
             copyKernel.SetArgument(3, secondBuffer);
@@ -136,7 +137,7 @@ namespace Template
             // run the simulation, 1 step
             GL.Finish();
 	        // clear the screen
-	        screen.Clear( 0 );
+	        screen.Clear(0);
             // do opencl stuff
             if (!GLInterop)
             {
