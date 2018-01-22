@@ -10,14 +10,13 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Template
 {
-
     class Game
     {
         // parameters for the screenwidth and -height
         public static int screenWidth;
         public static int screenHeight;
         // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
-        bool GLInterop = true;
+        bool GLInterop = false;
         // load the OpenCL program; this creates the OpenCL context
         static OpenCLProgram ocl = new OpenCLProgram( "../../program.cl" );
         // find the kernel named 'device_function' in the program
@@ -110,7 +109,14 @@ namespace Template
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
 
             // pass values to the kernel.
-            kernel.SetArgument(0, image);
+            if (GLInterop)
+            {
+                kernel.SetArgument(0, image);
+            }
+            else
+            {
+                kernel.SetArgument(0, buffer);
+            }
             kernel.SetArgument(1, pw);
             kernel.SetArgument(2, ph);
             kernel.SetArgument(3, amountOfCells);
@@ -131,14 +137,23 @@ namespace Template
         {
             // start timer
             timer.Restart();
+
+            for (int i = 0; i < pwph; i++)
+            {
+                pattern[i] = 0;
+            }
+            patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
+
             // run the simulation, 1 step
             GL.Finish();
 	        // clear the screen
 	        screen.Clear( 0 );
             // do opencl stuff
             if (!GLInterop)
-            { 
+            {
                 kernel.SetArgument(0, buffer);
+                kernel.SetArgument(4, patternBuffer);
+                kernel.SetArgument(5, secondBuffer);
             }
             kernel.SetArgument(6, xoffset);
             kernel.SetArgument(7, yoffset);
@@ -173,15 +188,26 @@ namespace Template
 		        // it in the window.
 		        // execute the kernel
 		        kernel.Execute( workSize, null );
-		        // get the data from the device to the host
-		        buffer.CopyFromDevice();
+                // get the data from the device to the host
+                buffer.CopyFromDevice();
                 patternBuffer.CopyFromDevice();
                 secondBuffer.CopyFromDevice();
-		        // plot pixels using the data on the host
-		        for( int y = 0; y < 512; y++ ) for( int x = 0; x < 512; x++ )
-		        {
-			        screen.pixels[x + y * screen.width] = buffer[x + y * 512];
-		        }
+                // plot pixels using the data on the host
+
+                for (int i = 0; i < pwph; i++)
+                {
+                    second[i] = pattern[i];
+                }
+                patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
+                secondBuffer = new OpenCLBuffer<uint>(ocl, second);
+
+                for (int y = 0; y < screenHeight; y++)
+                {
+                    for (int x = 0; x < screenWidth; x++)
+                    {
+                        screen.pixels[x + y * screenWidth] = buffer[x + y * screenWidth];
+                    }
+                }
 	        }
             // report performance
             Console.WriteLine("generation " + generation++ + ": " + timer.ElapsedMilliseconds + "ms");

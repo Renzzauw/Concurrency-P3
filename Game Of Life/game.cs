@@ -107,7 +107,7 @@ class Game
 		// start timer
 		timer.Restart();
 		// run the simulation, 1 step
-		//Simulate();
+		Simulate();
 		// visualize current state
 		screen.Clear( 0 );
 		for( uint y = 0; y < screen.height; y++ ) for( uint x = 0; x < screen.width; x++ )

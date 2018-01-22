@@ -1,4 +1,4 @@
-#define GLINTEROP
+//#define GLINTEROP
 
 // function that returns the value of the bit at the provided x and y coordinates in the provided buffer
 uint GetBit ( __global uint* second, uint x, uint y, uint pw)
@@ -13,7 +13,11 @@ uint GetBit ( __global uint* second, uint x, uint y, uint pw)
 }
 
 // main kernel
+#ifdef GLINTEROP
 __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight )
+#else
+__kernel void device_function( __global int* a, uint pw, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight )
+#endif
 {
 	// get the id of the current cell
 	int id = get_global_id(0);
@@ -52,19 +56,27 @@ __kernel void device_function( write_only image2d_t a, uint pw, uint ph, uint am
 		}
 	}
 	
-	// if we don't want to draw the pixel because it is outside our bounds, return
-	if (x < xoffset || x > (xoffset + screenWidth - 1) || y < yoffset || y > (yoffset + screenHeight - 1))
+#ifdef GLINTEROP
+	// if we want to draw the pixel because it is inside our bounds, draw it
+	if (x >= xoffset && x <= (xoffset + screenWidth - 1) && y >= yoffset && y <= (yoffset + screenHeight - 1))
 	{
-		return;
+		// create the position we want to draw the pixel using the offsets
+		int2 pos = (int2)((int)x - xoffset, (int)y - yoffset);
+		// get the colour using the GetBit function, this time it gets it's info from the pattern buffer
+		float colour = (float)GetBit(pattern, x, y, pw);
+		float4 col = (float4)(colour, colour, colour, 1.0f);
+		// finally, write the pixel to the image
+		write_imagef(a, pos, col);
 	}
-
-	// create the position we want to draw the pixel using the offsets
-	int2 pos = (int2)((int)x - xoffset, (int)y - yoffset);
-	// get the colour using the GetBit function, this time it gets it's info from the pattern buffer
-	float colour = (float)GetBit(pattern, x, y, pw);
-	float4 col = (float4)(colour, colour, colour, 1.0f);
-	// finally, write the pixel to the image
-	write_imagef(a, pos, col);
+#else
+	if (x >= xoffset && x <= (xoffset + screenWidth - 1) && y >= yoffset && y <= (yoffset + screenHeight - 1))
+	{
+		int c = (int)clamp(255.0f * (int)GetBit(pattern, x, y, pw), 0.0f, 255.0f);
+		int xPos = (int)x - xoffset;
+		int yPos = (int)y - yoffset;
+		a[xPos + yPos * screenWidth] = (c << 16) + (c << 8) + c;
+	}
+#endif
 }
 
 // function that copies the data from the pattern buffer to the second buffer
