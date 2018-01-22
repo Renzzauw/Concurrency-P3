@@ -37,9 +37,7 @@ namespace Template
         uint[] second;
         uint pw, ph; // note: pw is in uints; width in bits is 32 this value.
         // helper function for setting one bit in the pattern buffer
-        void BitSet(uint x, uint y) { pattern[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
-        // helper function for getting one bit from the secondary pattern buffer
-        uint GetBit(uint x, uint y) { return (second[y * pw + (x >> 5)] >> (int)(x & 31)) & 1U; }
+        void BitSet(uint x, uint y, uint[] array) { array[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
         // mouse handling: dragging functionality
         uint xoffset = 0, yoffset = 0;
         bool lastLButtonState = false;
@@ -96,15 +94,13 @@ namespace Template
                         if (state == 1) // expect other character
                         {
                             if (c == '$') { y += n; x = 0; } // newline
-                            else if (c == 'o') for (int i = 0; i < n; i++) BitSet(x++, y); else if (c == 'b') x += n;
+                            else if (c == 'o') for (int i = 0; i < n; i++) BitSet(x++, y, second); else if (c == 'b') x += n;
                             state = n = 0;
                         }
                     }
             }
             pwph = pw * ph;
             amountOfCells = pwph * 32;
-            // swap buffers
-            for (int i = 0; i < pw * ph; i++) second[i] = pattern[i];
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
             patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
 
@@ -137,13 +133,6 @@ namespace Template
         {
             // start timer
             timer.Restart();
-
-            for (int i = 0; i < pwph; i++)
-            {
-                pattern[i] = 0;
-            }
-            patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
-
             // run the simulation, 1 step
             GL.Finish();
 	        // clear the screen
@@ -152,8 +141,22 @@ namespace Template
             if (!GLInterop)
             {
                 kernel.SetArgument(0, buffer);
-                kernel.SetArgument(4, patternBuffer);
-                kernel.SetArgument(5, secondBuffer);
+                // if we have an even generation, we set the "pattern" variable in opencl 
+                // to the patternBuffer and "second" to the secondBuffer
+                // if the generation is odd, we set "pattern" to secondBuffer and
+                // "second" to patternBuffer
+                // So every generation these buffers get swapped, so we don't have to
+                // manually swap them every time
+                if (generation % 2 == 0)
+                {
+                    kernel.SetArgument(4, patternBuffer);
+                    kernel.SetArgument(5, secondBuffer);
+                }
+                else
+                {
+                    kernel.SetArgument(4, secondBuffer);
+                    kernel.SetArgument(5, patternBuffer);
+                }
             }
             kernel.SetArgument(6, xoffset);
             kernel.SetArgument(7, yoffset);
@@ -190,22 +193,14 @@ namespace Template
 		        kernel.Execute( workSize, null );
                 // get the data from the device to the host
                 buffer.CopyFromDevice();
-                patternBuffer.CopyFromDevice();
-                secondBuffer.CopyFromDevice();
                 // plot pixels using the data on the host
-
-                for (int i = 0; i < pwph; i++)
-                {
-                    second[i] = pattern[i];
-                }
-                patternBuffer = new OpenCLBuffer<uint>(ocl, pattern);
-                secondBuffer = new OpenCLBuffer<uint>(ocl, second);
 
                 for (int y = 0; y < screenHeight; y++)
                 {
                     for (int x = 0; x < screenWidth; x++)
                     {
-                        screen.pixels[x + y * screenWidth] = buffer[x + y * screenWidth];
+                        int index = x + y * screenWidth;
+                        screen.pixels[index] = buffer[index];
                     }
                 }
 	        }

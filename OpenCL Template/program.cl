@@ -40,7 +40,6 @@ __kernel void device_function( __global int* a, uint pw, uint ph, uint amountOfC
 
 	// set the value of the current bit to 0 in the pattern
 	atomic_and(&pattern[uintIndex], ~(1U << (x & 31)));
-	//pattern[uintIndex] &= ~(1U << (x & 31));
 
 	// skip the outer rows and first and last pixel of each row
 	if (x > 1 && x < pw * 32 - 1 && y > 1 && y < ph - 1)
@@ -52,7 +51,6 @@ __kernel void device_function( __global int* a, uint pw, uint ph, uint amountOfC
 		if ((GetBit(second, x, y, pw) == 1 && n == 2) || n == 3)
 		{
 			atomic_or(&pattern[uintIndex], 1U << (int)(x & 31));
-			//pattern[uintIndex] |= 1U << (int)(x & 31);
 		}
 	}
 	
@@ -103,5 +101,4 @@ __kernel void copy_data(int pw, int amountOfCells, __global uint* pattern, __glo
 	// get the value from the current bit from the pattern buffer and set it to the second buffer
 	int bitValue = GetBit(pattern, x, y, pw);
 	atomic_or(&second[uintIndex], bitValue << (int)(x & 31));
-	//second[uintIndex] |= bitValue << (int)(x & 31);
 }
