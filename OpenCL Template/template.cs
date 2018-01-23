@@ -72,7 +72,20 @@ namespace Template
 		{
 			// called once per frame; app logic
 			var keyboard = OpenTK.Input.Keyboard.GetState();
-			if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
+            if (keyboard[Key.Plus] || keyboard[Key.KeypadPlus])
+            {
+                //game.zoom += 1f;
+                game.zoom *= 2f;
+                //GL.Scale(game.zoom, game.zoom, 1f);
+            }
+            else if (keyboard[Key.Minus] || keyboard[Key.KeypadMinus])
+            {
+                //game.zoom -= 1f;
+                game.zoom *= 0.5f;
+                //GL.Scale(game.zoom, game.zoom, 1f);
+            }
+            
+            if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
             var mouse = OpenTK.Input.Mouse.GetState();
             Point p = CursorPosition.GetCursorPosition();
             game.SetMouseState(p.X, p.Y, mouse.LeftButton == ButtonState.Pressed);
@@ -101,7 +114,7 @@ namespace Template
 			GL.TexCoord2( 1.0f, 1.0f ); GL.Vertex2(  1.0f, -1.0f );
 			GL.TexCoord2( 1.0f, 0.0f ); GL.Vertex2(  1.0f,  1.0f );
 			GL.TexCoord2( 0.0f, 0.0f ); GL.Vertex2( -1.0f,  1.0f );
-			GL.End();
+            GL.End();
 			game.Render();
 			SwapBuffers();
 		}

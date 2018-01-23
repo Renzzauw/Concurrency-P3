@@ -15,6 +15,8 @@ namespace Template
         // parameters for the screenwidth and -height
         public static int screenWidth;
         public static int screenHeight;
+        // Zoomfactor for the camera
+        public float zoom = 1f;
         // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
         bool GLInterop = true;
         // load the OpenCL program; this creates the OpenCL context
@@ -132,8 +134,13 @@ namespace Template
         // Main application entry point: the template calls this function once per frame.
         public void Tick()
         {
+            GL.Ortho(-10f, 10f, -10, 10, -1.0f, 1.0f);
+            //GL.Scale(zoom, zoom, 0);
             // start timer
             timer.Restart();
+            // Check for user input to zoom in or out
+            // ZoomCamera();
+            
             // run the simulation, 1 step
             GL.Finish();
 	        // clear the screen
@@ -213,14 +220,37 @@ namespace Template
 	        if (GLInterop)
 	        {
 		        GL.LoadIdentity();
-		        GL.BindTexture( TextureTarget.Texture2D, image.OpenGLTextureID );
+                GL.BindTexture( TextureTarget.Texture2D, image.OpenGLTextureID );
 		        GL.Begin( PrimitiveType.Quads );
-		        GL.TexCoord2( 0.0f, 1.0f ); GL.Vertex2( -1.0f, -1.0f );
-		        GL.TexCoord2( 1.0f, 1.0f ); GL.Vertex2(  1.0f, -1.0f );
-		        GL.TexCoord2( 1.0f, 0.0f ); GL.Vertex2(  1.0f,  1.0f );
-		        GL.TexCoord2( 0.0f, 0.0f ); GL.Vertex2( -1.0f,  1.0f );
+		        GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-1.0f * zoom, -1.0f * zoom);
+		        GL.TexCoord2(1.0f, 1.0f); GL.Vertex2(1.0f * zoom, -1.0f * zoom);
+		        GL.TexCoord2(1.0f, 0.0f); GL.Vertex2(1.0f * zoom, 1.0f * zoom);
+		        GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-1.0f * zoom, 1.0f * zoom);
 		        GL.End();
 	        }
+        }
+
+        // Check for user keyboard input to zoom in the camera
+        public void ZoomCamera()
+        {
+            var keyboard = OpenTK.Input.Keyboard.GetState();
+            if (keyboard[OpenTK.Input.Key.Plus] || keyboard[OpenTK.Input.Key.KeypadPlus])
+            {
+                /*if (zoom <= 2)
+                {
+                    zoom += 1f;
+                }*/
+                zoom *= 2;
+            }
+
+            else if (keyboard[OpenTK.Input.Key.Minus] || keyboard[OpenTK.Input.Key.KeypadMinus])
+            {
+                /*if (zoom >= 1)
+                {
+                    zoom -= 1f;
+                }*/
+                zoom *= 0.05f;
+            }
         }
     }
 
