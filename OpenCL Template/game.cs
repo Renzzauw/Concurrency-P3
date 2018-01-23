@@ -134,13 +134,8 @@ namespace Template
         // Main application entry point: the template calls this function once per frame.
         public void Tick()
         {
-            GL.Ortho(-10f, 10f, -10, 10, -1.0f, 1.0f);
-            //GL.Scale(zoom, zoom, 0);
             // start timer
             timer.Restart();
-            // Check for user input to zoom in or out
-            // ZoomCamera();
-            
             // run the simulation, 1 step
             GL.Finish();
 	        // clear the screen
@@ -169,8 +164,8 @@ namespace Template
             kernel.SetArgument(6, xoffset);
             kernel.SetArgument(7, yoffset);
 
- 	        // execute kernel
-	        long[] workSize = { amountOfCells };
+            // execute kernel
+            long[] workSize = { amountOfCells };
 	        if (GLInterop)
 	        {
 		        // INTEROP PATH:
@@ -220,14 +215,15 @@ namespace Template
 	        if (GLInterop)
 	        {
 		        GL.LoadIdentity();
+                GL.Scale(zoom, zoom, 1.0f);
                 GL.BindTexture( TextureTarget.Texture2D, image.OpenGLTextureID );
 		        GL.Begin( PrimitiveType.Quads );
-		        GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-1.0f * zoom, -1.0f * zoom);
-		        GL.TexCoord2(1.0f, 1.0f); GL.Vertex2(1.0f * zoom, -1.0f * zoom);
-		        GL.TexCoord2(1.0f, 0.0f); GL.Vertex2(1.0f * zoom, 1.0f * zoom);
-		        GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-1.0f * zoom, 1.0f * zoom);
-		        GL.End();
-	        }
+                GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-1.0f, -1.0f);
+		        GL.TexCoord2(1.0f, 1.0f); GL.Vertex2(1.0f, -1.0f);
+		        GL.TexCoord2(1.0f, 0.0f); GL.Vertex2(1.0f, 1.0f);
+		        GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-1.0f, 1.0f);
+                GL.End();
+            }
         }
 
         // Check for user keyboard input to zoom in the camera

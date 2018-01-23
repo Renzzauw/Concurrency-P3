@@ -14,9 +14,9 @@ uint GetBit ( __global uint* second, uint x, uint y, uint levelWidth)
 
 // main kernel
 #ifdef GLINTEROP
-__kernel void device_function( write_only image2d_t a, uint levelWidth, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight )
+__kernel void device_function(write_only image2d_t a, uint levelWidth, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight)
 #else
-__kernel void device_function( __global int* a, uint levelWidth, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight )
+__kernel void device_function(__global int* a, uint levelWidth, uint ph, uint amountOfCells, __global uint* pattern, __global uint* second, uint xoffset, uint yoffset, int screenWidth, int screenHeight)
 #endif
 {
 	// get the id of the current cell
@@ -55,7 +55,7 @@ __kernel void device_function( __global int* a, uint levelWidth, uint ph, uint a
 	}
 	
 	// if we don't want to draw the pixel because it is outide our bounds, return
-	if (x < xoffset || x > (xoffset + screenWidth - 1) || y < yoffset || y > (yoffset + screenHeight - 1))
+	if (x < xoffset || x > xoffset + screenWidth - 1 || y < yoffset || y > yoffset + screenHeight - 1)
 	{
 		return;
 	}

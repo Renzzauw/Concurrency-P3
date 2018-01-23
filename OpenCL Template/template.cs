@@ -74,15 +74,11 @@ namespace Template
 			var keyboard = OpenTK.Input.Keyboard.GetState();
             if (keyboard[Key.Plus] || keyboard[Key.KeypadPlus])
             {
-                //game.zoom += 1f;
                 game.zoom *= 2f;
-                //GL.Scale(game.zoom, game.zoom, 1f);
             }
             else if (keyboard[Key.Minus] || keyboard[Key.KeypadMinus])
             {
-                //game.zoom -= 1f;
                 game.zoom *= 0.5f;
-                //GL.Scale(game.zoom, game.zoom, 1f);
             }
             
             if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
@@ -108,12 +104,12 @@ namespace Template
 			GL.Clear( ClearBufferMask.ColorBufferBit );
 			GL.MatrixMode( MatrixMode.Modelview );
 			GL.LoadIdentity();
-			GL.BindTexture( TextureTarget.Texture2D, screenID );
+            GL.BindTexture( TextureTarget.Texture2D, screenID );
 			GL.Begin( PrimitiveType.Quads );
-			GL.TexCoord2( 0.0f, 1.0f ); GL.Vertex2( -1.0f, -1.0f );
-			GL.TexCoord2( 1.0f, 1.0f ); GL.Vertex2(  1.0f, -1.0f );
-			GL.TexCoord2( 1.0f, 0.0f ); GL.Vertex2(  1.0f,  1.0f );
-			GL.TexCoord2( 0.0f, 0.0f ); GL.Vertex2( -1.0f,  1.0f );
+			GL.TexCoord2(0.0f, 1.0f); GL.Vertex2( -1.0f, -1.0f );
+			GL.TexCoord2(1.0f, 1.0f); GL.Vertex2(  1.0f, -1.0f );
+			GL.TexCoord2(1.0f, 0.0f); GL.Vertex2(  1.0f,  1.0f );
+			GL.TexCoord2(0.0f, 0.0f); GL.Vertex2( -1.0f,  1.0f );
             GL.End();
 			game.Render();
 			SwapBuffers();
