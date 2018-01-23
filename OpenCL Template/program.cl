@@ -1,4 +1,4 @@
-//#define GLINTEROP
+#define GLINTEROP
 
 // function that returns the value of the bit at the provided x and y coordinates in the provided buffer
 uint GetBit ( __global uint* second, uint x, uint y, uint levelWidth)
@@ -97,7 +97,17 @@ __kernel void copy_data(uint levelWidth, uint amountOfCells, __global uint* patt
 	// get the index of the correct uint
 	uint uintIndex = id >> 5;
 
-	// get the value from the current bit from the pattern buffer and set it to the second buffer
+	// get the value from the current bit from the pattern buffer
 	int bitValue = GetBit(pattern, x, y, levelWidth);
-	atomic_or(&second[uintIndex], bitValue << (int)(x & 31));
+
+	// if the cell is alive, set its bit in second to 1
+	if (bitValue == 1)
+	{
+		atomic_or(&second[uintIndex], 1U << (int)(x & 31));
+	}
+	// if it is dead, set its bit in second to 0
+	else
+	{
+		atomic_and(&second[uintIndex], ~(1U << (x & 31)));
+	}
 }

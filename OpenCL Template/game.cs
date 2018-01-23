@@ -16,7 +16,7 @@ namespace Template
         public static int screenWidth;
         public static int screenHeight;
         // when GLInterop is set to true, the fractal is rendered directly to an OpenGL texture
-        bool GLInterop = false;
+        bool GLInterop = true;
         // load the OpenCL program; this creates the OpenCL context
         static OpenCLProgram ocl = new OpenCLProgram( "../../program.cl" );
         // find the kernel named 'device_function' in the program
@@ -195,7 +195,6 @@ namespace Template
                 // get the data from the device to the host
                 buffer.CopyFromDevice();
                 // plot pixels using the data on the host
-
                 for (int y = 0; y < screenHeight; y++)
                 {
                     for (int x = 0; x < screenWidth; x++)
