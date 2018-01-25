@@ -140,10 +140,6 @@ namespace Template
             GL.Finish();
 	        // clear the screen
 	        screen.Clear(0);
-            if (zoom < 1)
-            {
-                zoom = 1;
-            }
             // do opencl stuff
             if (!GLInterop)
             {
@@ -227,21 +223,6 @@ namespace Template
 		        GL.TexCoord2(1.0f, 0.0f); GL.Vertex2(1.0f, 1.0f);
 		        GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-1.0f, 1.0f);
                 GL.End();
-            }
-        }
-
-        // Check for user keyboard input to zoom in the camera
-        public void ZoomCamera()
-        {
-            var keyboard = OpenTK.Input.Keyboard.GetState();
-            if (keyboard[OpenTK.Input.Key.Plus] || keyboard[OpenTK.Input.Key.KeypadPlus])
-            {
-                zoom *= 2;
-            }
-
-            else if (keyboard[OpenTK.Input.Key.Minus] || keyboard[OpenTK.Input.Key.KeypadMinus])
-            {
-                zoom *= 0.05f;
             }
         }
     }

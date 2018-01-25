@@ -36,3 +36,4 @@ D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Release\template.csprojRe
 D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Release\template.csproj.CoreCompileInputs.cache
 D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Release\template.exe
 D:\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Release\template.pdb
+d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Release\template.csproj.CoreCompileInputs.cache

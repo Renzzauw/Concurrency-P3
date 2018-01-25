@@ -80,6 +80,10 @@ namespace Template
             else if (keyboard.IsKeyDown(Key.Minus) || keyboard.IsKeyDown(Key.KeypadMinus))
             {
                 game.zoom /= 1.05f;
+                if (game.zoom < 1)
+                {
+                    game.zoom = 1;
+                }
             }
 
             if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
