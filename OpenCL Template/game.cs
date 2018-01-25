@@ -45,9 +45,11 @@ namespace Template
         void BitSet(uint x, uint y, uint[] array) { array[y * pw + (x >> 5)] |= 1U << (int)(x & 31); }
         // mouse handling: dragging functionality
         uint xoffset = 0, yoffset = 0;
+        // variables for the mouse
         bool lastLButtonState = false;
         int dragXStart, dragYStart, offsetXStart, offsetYStart;
 
+        // sets the mouse state, used for dragging the game
         public void SetMouseState(int x, int y, bool pressed)
         {
             if (pressed)
@@ -101,7 +103,6 @@ namespace Template
                         }
                     }
             }
-            //pwph = pw * ph;
             amountOfCells = pwph << 5;
             levelWidth = pw << 5;
             secondBuffer = new OpenCLBuffer<uint>(ocl, second);
@@ -130,6 +131,7 @@ namespace Template
             copyKernel.SetArgument(2, patternBuffer);
             copyKernel.SetArgument(3, secondBuffer);
         }
+
         // TICK
         // Main application entry point: the template calls this function once per frame.
         public void Tick()
@@ -215,6 +217,7 @@ namespace Template
 	        if (GLInterop)
 	        {
 		        GL.LoadIdentity();
+                // scale the game to the zoom factor
                 GL.Scale(zoom, zoom, zoom);
                 GL.BindTexture( TextureTarget.Texture2D, image.OpenGLTextureID );
 		        GL.Begin( PrimitiveType.Quads );

@@ -85,8 +85,10 @@ namespace Template
                     game.zoom = 1;
                 }
             }
-
-            if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
+            else if (keyboard[Key.Escape])
+            {
+                this.Exit();
+            }
             var mouse = OpenTK.Input.Mouse.GetState();
             Point p = CursorPosition.GetCursorPosition();
             game.SetMouseState(p.X, p.Y, mouse.LeftButton == ButtonState.Pressed);

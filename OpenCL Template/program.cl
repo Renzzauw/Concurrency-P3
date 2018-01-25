@@ -69,9 +69,12 @@ __kernel void device_function(__global int* a, uint levelWidth, uint ph, uint am
 	// finally, write the pixel to the image
 	write_imagef(a, pos, col);
 #else
+	// create an int, either 0 or 255, for the colour
 	int c = (int)clamp(255.0f * (int)GetBit(pattern, x, y, levelWidth), 0.0f, 255.0f);
+	// create the positions
 	int xPos = (int)x - xoffset;
 	int yPos = (int)y - yoffset;
+	// set the colour to the position in the buffer
 	a[xPos + yPos * screenWidth] = (c << 16) + (c << 8) + c;
 #endif
 }
