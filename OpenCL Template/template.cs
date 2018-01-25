@@ -38,6 +38,7 @@ namespace Template
 	{
 		static int screenID;
 		static Game game;
+
 		protected override void OnLoad( EventArgs e )
 		{
 			// called upon app init
@@ -72,15 +73,15 @@ namespace Template
 		{
 			// called once per frame; app logic
 			var keyboard = OpenTK.Input.Keyboard.GetState();
-            if (keyboard[Key.Plus] || keyboard[Key.KeypadPlus])
+            if (keyboard.IsKeyDown(Key.Plus) || keyboard.IsKeyDown(Key.KeypadPlus))
             {
-                game.zoom *= 2f;
+                game.zoom *= 1.05f;
             }
-            else if (keyboard[Key.Minus] || keyboard[Key.KeypadMinus])
+            else if (keyboard.IsKeyDown(Key.Minus) || keyboard.IsKeyDown(Key.KeypadMinus))
             {
-                game.zoom *= 0.5f;
+                game.zoom /= 1.05f;
             }
-            
+
             if (keyboard[OpenTK.Input.Key.Escape]) this.Exit();
             var mouse = OpenTK.Input.Mouse.GetState();
             Point p = CursorPosition.GetCursorPosition();
