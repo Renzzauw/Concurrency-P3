@@ -36,3 +36,4 @@ d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\bin\Debug\OpenTK.
 d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.csprojResolveAssemblyReference.cache
 d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.exe
 d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.pdb
+d:\Users\Renzo\Documents\GitHub\Concurrency-P3\OpenCL Template\obj\Debug\template.csproj.CoreCompileInputs.cache

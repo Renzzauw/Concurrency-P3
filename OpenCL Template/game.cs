@@ -140,6 +140,10 @@ namespace Template
             GL.Finish();
 	        // clear the screen
 	        screen.Clear(0);
+            if (zoom < 1)
+            {
+                zoom = 1;
+            }
             // do opencl stuff
             if (!GLInterop)
             {
@@ -215,7 +219,7 @@ namespace Template
 	        if (GLInterop)
 	        {
 		        GL.LoadIdentity();
-                GL.Scale(zoom, zoom, 1.0f);
+                GL.Scale(zoom, zoom, zoom);
                 GL.BindTexture( TextureTarget.Texture2D, image.OpenGLTextureID );
 		        GL.Begin( PrimitiveType.Quads );
                 GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-1.0f, -1.0f);
@@ -232,19 +236,11 @@ namespace Template
             var keyboard = OpenTK.Input.Keyboard.GetState();
             if (keyboard[OpenTK.Input.Key.Plus] || keyboard[OpenTK.Input.Key.KeypadPlus])
             {
-                /*if (zoom <= 2)
-                {
-                    zoom += 1f;
-                }*/
                 zoom *= 2;
             }
 
             else if (keyboard[OpenTK.Input.Key.Minus] || keyboard[OpenTK.Input.Key.KeypadMinus])
             {
-                /*if (zoom >= 1)
-                {
-                    zoom -= 1f;
-                }*/
                 zoom *= 0.05f;
             }
         }
